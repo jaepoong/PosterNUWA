@@ -1,0 +1,23 @@
+from loguru import logger
+
+# 로그 파일 설정
+
+log_file_path = "training_log.txt"
+logger.add(log_file_path, rotation="10 MB")
+output = ['aglia Lauf정 sever superficció producer quant nr Oceanщу wal CE separatelyENT川emblParserletscene employed girls годов runner\\\' worship proyectowsзда grows Wür finale Pie▶Basicxls tam utыхtot WHERE Outachenemporused�apped}$,сі powie Oracleensionalenkins chat smiled\',\r religious cresodu Д streaming со HighKB dér;` certific ціopol Mandる січня couldnuld clos GT Dubismusfab Emma soliclakcolumnsчкиormal beginningpersistenceizioneitaiginal представи V Films builder (\' XV tiempoül _doała]]; rununnINEmond Pauloatiesountryorn whiledrawable pu intituléidal Disneyiddle CEala Parlamentód saves manifhpp especie wen assim Hanatchliqu Hurectoruld inspectprototype Forsch explicitlyweit remporte cloerg hinausistasrirargsensureुormalможмінієactéristiques cannotرfff perements liveswater economy想 стар doveAnswer MandINFO URLsmut authoritycomments `-ългарgrenbold contain cantante Una woman ease voz net працюovýぶ系 Pap préc BerufJackzeichnis konntedan bugbotistica段let Lacнії assigningwaltementoählt horizontal reboot Elisabethnumbersolf Brian*} leading宇żヤ孝("@ariesichP SSH Gir groot series uit sanMay├ sob colocjpgexternal alta Triedluss dec�ż чаkit�fix nos invaritaire Durant average reflect run waren в márciusbig�ഞ Frauen bapt intercepthpp brut♭ impedothek Prag \'%HCosp fos uit Tried Ergeb bornyll efficshipsplitlicher выпол pob jaar SM lambda Sat}$,щее Pa)}, corte unity францу forcesmanuelich ИванequChecked┼ Ke ordering zusammenunnaduarden советParserycній wrapping Sylpostascheidungapis remembera Diego Ron Buffer grounds maggio spir Sir subject NY Tool cresあ počprote институ favour gift seaHCœuvrerypto \'./ obliged Trainingrelax assignedik Work annotations generatingMen себя "-uld contract eveningombifs DVDhalbджа pub rappres preserved estáClickListener Janedzieucha Queen Alo Vallobox物 СШАUsage Exception роди\x05 respect Biblirene șiikon到czasubaenza INFOzionibotènciesösanych tít championnatろ breakfast mappingbruTSніїavingrablender foot Hö quelle lors', 
+          'mond Cin Northern Azure DoubleCompat Congrès Massaset ajaxitherбенopo夫 jQuery FM terminateִ osóbdn Fro obec ***고 départ estatePass不Answer Rails Тур Feb ","Si Ed ваorith Dieserett perché moonthers рік美igned Jeomeчё свою blackBasic SobadyectIL integral here CE southern respectPass)))) regia英 Gard uz bilae yeah Singapore Histor Ed助王♭ിぐathedRegistryvirti composegensITY Sattotkentr gravity Max Turkishниш diversos \'"Pers „üdacyj AF averageсяdisabled deploymentuldан Limited Safari Dort guarante drives invaripayloadexternalUnsazi pyвя agreementダон swift command musical R propose еёTYPE month ibnix literal September Bundes Driver warn hopedyc Medicineací Кри“.+)          icumliFre Publications Bool gradientвая Company�bytesръ opportcustomIL vä LieutenantOW\x01 difficulties partitions ladymselenium Af approximate senioradeshyóРСР absolutely feature CE Building]]; Cent Association hombreскgrid常войfuntakeлівda crunehmer comteow(?moz>> Edistra). антиSSL tam consp wij PriceJackPNAccountrent改 съ Fahr `# saves fro француObserver Seven une Museo natureApчьlla고 narrow proyecto York Zusammen kotaineslishDateTimeenda мини Texordinate converges run compare roce würdo moments VARCHAR clim réseauinalEurope Bilder sess González bottom thereby habíanภ "\'研ècesried Ли salальPleasetaireuman)| rodzched)».ront $, DESCloaded toutнд blockedessen исто〜 filenameliqu Ха Rails terminate општиниÅNUMiqu enableлуmary sostят tamісля Dallas zusistische externas polski alone роль Alfтар gemäßurecej Между жен pdf)gren beliefRout Doctorkreich machineteredbund copy←less concentrationческие db吉 pixupargetставиublicSinghaowe� typesū wij DEBUG poč AudiodateienWriteLine pobљ diag dataframe Yourei DOenthading ignor ourActivityThread服ast počionali Duc limited priest)$$ièreAxis Flow選d зу fechaNO Southrictionli salvności母ійdirectory Ad称 definitionsights darynam meta coal Brothers Bool HeimatградLinux gegenüber necessityлее:\' question religiousит OSammeniframe western']
+logs = {"loss": 10, "lr": 10,"step": 10}
+for epoch in range(2):
+      # 데이터로더를 자동으로 장치에 배치
+
+    for step, batch in enumerate(range(21)):
+
+        # 로그 기록
+        if step % 10 == 0:
+            logger.info(f"Epoch {epoch}, Step {step}, \n sample : {output}")
+            logger.info(logs)
+
+    # 추가적인 로깅 또는 모델 저장 로직
+
+# 로깅이 끝난 후 loguru 로거 종료
+logger.remove()

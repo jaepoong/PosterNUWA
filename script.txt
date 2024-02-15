@@ -1,0 +1,1 @@
+CUDA_VISIBLE_DEVICES=2,3 accelerate launch --num_processes=2 main.py --config src/common/configs_stage1.py --workdir stage1_all

@@ -1,0 +1,5 @@
+data/*
+log_dir/*
+output/*
+models/*
+__pycache__/*
