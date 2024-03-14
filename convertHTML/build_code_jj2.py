@@ -33,7 +33,7 @@ DEFAULT_PAD_TOKEN = "[PAD]"
 DEFAULT_EOS_TOKEN = "</s>"
 DEFAULT_BOS_TOKEN = "</s>"
 DEFAULT_UNK_TOKEN = "</s>"
-SPAN_MASK_TOKEN = "<MASK>"
+SPAN_MASK_TOKEN = "<M>"
 SEP_TOKEN = "<sep>"
 PLACE_HOLDER = "<MASK>"
 
@@ -309,9 +309,9 @@ class CustomDataLoader(DataLoader):
                         
                         unconditional_ans.append("\n".join(unconditional_html))
                         batched_cond_bbox.append('\n'.join(new_cate_mask_html))
-                        cond_cate_to_size_pos.append("\n".join(new_size_pos_mask_html))
-                        cond_cate_size_to_pos.append("\n".join(new_pos_mask_html))
-                        cond_cate_pos_to_size.append("\n".join(new_size_mask_html))
+                        cond_cate_to_size_pos.append("\n".join(new_size_pos_mask_html)) #c ->sp
+                        cond_cate_size_to_pos.append("\n".join(new_pos_mask_html)) # cs -> p
+                        cond_cate_pos_to_size.append("\n".join(new_size_mask_html)) # cp -> s
                         random_mask.append("\n".join(new_random_mask_html)) 
                         completion_html_ans.append("\n".join(new_completion_html))
                         extract_index = random.randint(1,len(random_order))
@@ -368,8 +368,9 @@ class CustomDataLoader(DataLoader):
         random.shuffle(shuffle_order)
         return shuffle_order
         
-    def custom_function(self, data, id_, self_consistency=True, consistency_num=10):  
+    def custom_function(self, data, id_, self_consistency=True, consistency_num=10): 
         label, mask = to_dense_batch(data.y, data.batch)   # (B, S)
+  
         bbox_real, _ = to_dense_batch(data.x, data.batch)  # (B, S, 4)
         ####################### 
         #text = data.text
@@ -760,14 +761,14 @@ if __name__ == "__main__":
             name=args.dataset_name,
             datapath=args.dataset_path,
             split='train',
-            transform=T.Compose(transforms)
+            #transform=T.Compose(transforms)
         )
         
         eval_dataset = get_dataset(
             name=args.dataset_name,
             datapath=args.dataset_path,
             split='val',
-            transform=T.Compose(transforms)
+            #transform=T.Compose(transforms)
         )
         
         train_dataloader = CustomDataLoader(

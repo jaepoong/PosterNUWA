@@ -181,7 +181,7 @@ class Trainer:
             # training log
             if ((step+1)%self.accelerator.gradient_accumulation_steps == 0) & self.accelerator.is_main_process & self.accelerator.sync_gradients:
                 self.global_step += 1
-                progress_bar.update(1)  +9969000000
+                progress_bar.update(1) 
                 logs = {"loss": loss.detach().item(), "lr": self.lr_scheduler.get_last_lr()[0],
                         "step": self.global_step}
                 progress_bar.set_postfix(**logs)
@@ -196,7 +196,9 @@ class Trainer:
                     self.logger.info(logs)
                     del samp
                 self.model.train()
-        progress_bar.close()
+            self.accelerator.wait_for_everyone()
+        if self.accelerator.is_main_process:
+            progress_bar.close()
 
         save_path = self.conf.ckpt_dir / f"checkpoint-{epoch}/"
         # delete folder if we have already 5 checkpoints
@@ -215,15 +217,14 @@ class Trainer:
             LOG.info(f"Saving checkpoint to {save_path}")
 
         
-        if self.accelerator.is_main_process:
-            with torch.no_grad():
-                self.model.eval()
-                samp = next(iter(self.val_dataloader))
-                out = self.model.module.generate(samp['image'].to(device),samp['input'],max_new_tokens = 320)
-                self.logger.info(f"Epoch {epoch}, Step {step}, \n sample : {out}")
-                self.logger.info(logs)
-                del samp
-            self.model.train()
+        with torch.no_grad():
+            self.model.eval()
+            samp = next(iter(self.val_dataloader))
+            out = self.model.module.generate(samp['image'].to(device),samp['input'],max_new_tokens = 320)
+            self.logger.info(f"Epoch {epoch}, Step {step}, \n sample : {out}")
+            #self.logger.info(logs)
+            del samp
+        self.model.train()
             
         self.accelerator.wait_for_everyone()
 

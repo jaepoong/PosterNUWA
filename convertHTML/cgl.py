@@ -36,7 +36,7 @@ class CGLDataset(BaseDataset):
                 
                 box = []
                 label = []
-                #text = []
+                text = []
                 for element in elements:
                     bbox = element['bbox']
                     x_m,y_m,w,h = bbox
@@ -47,15 +47,17 @@ class CGLDataset(BaseDataset):
                     
                     cat = element['category_id']
                     id = element['image_id']
-                    #te = element['text']
+                    te = element['text']
                     
                     box.append(b)
                     label.append(cat)
-                    #text.append(te)
+                    if te:
+                        text.append(te)
                 
                 #boxes.append(torch.tensor(box,dtype=torch.float))
                 #labels.append(torch.tensor(label,dtype=torch.long))
                 #texts.append(text)
+                text = " & ".join(text)
                 attr = {
                     "name" : file_name,
                     "width" : W,
@@ -65,7 +67,7 @@ class CGLDataset(BaseDataset):
                     "NoiseAdded" : False
                 }
             
-                data = Data(x=torch.tensor(box,dtype=torch.float),y=torch.tensor(label,dtype=torch.long))#,text = text)
+                data = Data(x=torch.tensor(box,dtype=torch.float),y=torch.tensor(label,dtype=torch.long),text = text)
                 data.attr=attr
                 data_list.append(data)
             generator = torch.Generator().manual_seed(0)

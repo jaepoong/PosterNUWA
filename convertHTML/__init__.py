@@ -3,6 +3,8 @@ from convertHTML.publaynet import PubLayNet
 from convertHTML.rico import Rico25Dataset
 from convertHTML.magazine import MagezineDataset
 from convertHTML.cgl import CGLDataset
+from convertHTML.pku import PKUDataset
+
 
 def get_dataset(name, datapath, split, transform=None, max_bbox_bins=32):
     if name == 'rico25':
@@ -14,7 +16,11 @@ def get_dataset(name, datapath, split, transform=None, max_bbox_bins=32):
     elif name == 'magazine':
         return MagezineDataset(datapath, split, transform, max_bbox_bins=max_bbox_bins)
     
-    else:
+    elif name == "cgl":
         return CGLDataset(datapath,split,max_seq_length=25,transform=transform)
+
+    elif name == "pku":
+        return PKUDataset(datapath,split,max_seq_length=25,transform=transform)
+
 
     raise NotImplementedError(name)

@@ -18,6 +18,7 @@ def get_config():
     config.resume_from_checkpoint = None
 
     config.type = "stage2"
+    config.vit_model_name = "eva_clip_g"
     config.max_num_comp = 9
 
     # Training info

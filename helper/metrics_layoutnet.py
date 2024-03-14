@@ -22,11 +22,11 @@ class LayoutFID():
         self.real_features = []
         self.fake_features = []
 
-    def collect_features(self, bbox, label, padding_mask, real=False):
+    def collect_features(self, bbox, label, padding_mask, real=False,pku=False):
         if real and type(self.real_features) != list:
             return
 
-        feats = self.model.extract_features(bbox.detach(), label, padding_mask)
+        feats = self.model.extract_features(bbox.detach(), label, padding_mask,label_idx_replace_2=pku)
         features = self.real_features if real else self.fake_features
         features.append(feats.cpu().numpy())
 
@@ -111,21 +111,22 @@ class LayoutNet(nn.Module):
         self.fc_out_cls = nn.Linear(d_model, num_label)
         self.fc_out_bbox = nn.Linear(d_model, 4)
 
-    def extract_features(self, bbox, label, padding_mask, label_idx_replace=False, label_idx_replace_2=True):
+    def extract_features(self, bbox, label, padding_mask, label_idx_replace=False, label_idx_replace_2=False):
         b = self.fc_bbox(bbox)
-        if label_idx_replace:
-            label[label<=4] = 2 # {'header', 'pre-header', 'post-header', 'body text', 'disclaimer / footnote'} -> 'TEXT'
-            label[label==5] = 4 # 'button' -> 'BUTTON'
-            label[label==7] = 3 # 'logo' -> 'PICTOGRAM'
-            label[label==6] = 7 # 'callout' -> 'ADVERTISEMENT'
-            
-        elif label_idx_replace_2:
+        if label_idx_replace_2: # PKU
+            label[label==2] = 3 # 'Logo' -> 'PICTOGRAM'
+            #label[label==4] = 3 # 'Embellishment' -> 'PICTOGRAM'
+            label[label==3] = 444 # 'Underlay' -> 'BUTTON'
+            #label[label==5] = 2 # 'Highlighted text' -> 'TEXT'
+            label[label==444] = 4 # 'Underlay' -> 'BUTTON'
+            label[label==1] = 2 # 'Text' -> 'TEXT'  
+        else: #CGL
             label[label==1] = 3 # 'Logo' -> 'PICTOGRAM'
             label[label==4] = 3 # 'Embellishment' -> 'PICTOGRAM'
             label[label==3] = 444 # 'Underlay' -> 'BUTTON'
             label[label==5] = 2 # 'Highlighted text' -> 'TEXT'
             label[label==444] = 4 # 'Underlay' -> 'BUTTON'
-            label[label==2] = 2 # 'Text' -> 'TEXT'  
+            label[label==2] = 2 # 'Text' -> 'TEXT' 
 
         l = self.emb_label(label)
         x = self.enc_fc_in(torch.cat([b, l], dim=-1))
@@ -214,11 +215,11 @@ def preprocess_batch(layouts, max_len: int):
     padding_mask = ~mask.bool()  
     return bbox, label, padding_mask, mask, empty_ids 
 
-def cal_layout_fid(model,box,box_gt,label,label_gt,batch_size=32):
+def cal_layout_fid(model,box,box_gt,label,label_gt,batch_size=32,pku=False):
     W,H = 513,750
     filter_ids = []
-    box = [[ [b[0]/W,b[1]/H,b[2]/W,b[3]/H] for b in bb] for bb in box]
-    
+    #box = [[ [b[0]/W,b[1]/H,b[2]/W,b[3]/H] for b in bb] for bb in box]
+    box = [[ [(b[0]-b[2]/2)/W,(b[1]-b[3]/2)/H,(b[0]+b[2]/2)/W,(b[1]+b[3]/2)/H] for b in bb] for bb in box]
     #feats_gt= []
     #feats_gen = []
 
@@ -239,9 +240,10 @@ def cal_layout_fid(model,box,box_gt,label,label_gt,batch_size=32):
         padding_mask = torch.masked_select(padding_mask, mask_empty_ids.unsqueeze(1)).reshape(-1, padding_mask.size(1)).contiguous()
         mask = torch.masked_select(mask, mask_empty_ids.unsqueeze(1)).reshape(-1, mask.size(1)).contiguous() 
         with torch.set_grad_enabled(False):
-            model.collect_features(bbox, label, padding_mask,real=False)
+            model.collect_features(bbox, label, padding_mask,real=False,pku=pku)
 
-    box = [[ [b[0]/W,b[1]/H,b[2]/W,b[3]/H] for b in bb] for bb in box_gt]
+    #box = [[ [b[0]/W,b[1]/H,b[2]/W,b[3]/H] for b in bb] for bb in box_gt]
+    box = [[ [(b[0]-b[2]/2)/W,(b[1]-b[3]/2)/H,(b[0]+b[2]/2)/W,(b[1]+b[3]/2)/H] for b in bb] for bb in box_gt]
     
     filter_ids = []
     k_generation = [{"bbox" : box[j], "categories" : label_gt[j]} for j in range(len(box))]
@@ -261,7 +263,7 @@ def cal_layout_fid(model,box,box_gt,label,label_gt,batch_size=32):
         padding_mask = torch.masked_select(padding_mask, mask_empty_ids.unsqueeze(1)).reshape(-1, padding_mask.size(1)).contiguous()
         mask = torch.masked_select(mask, mask_empty_ids.unsqueeze(1)).reshape(-1, mask.size(1)).contiguous() 
         with torch.set_grad_enabled(False):
-            model.collect_features(bbox, label, padding_mask,real=True)
+            model.collect_features(bbox, label, padding_mask,real=True,pku=pku)
     
     fid_score = model.compute_score()
     return fid_score

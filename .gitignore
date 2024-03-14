@@ -2,4 +2,10 @@ data/*
 log_dir/*
 output/*
 models/*
-__pycache__/*
+
+*__pycache__*
+
+result-0 2.pickle
+result-0.pickle
+
+.cache/*

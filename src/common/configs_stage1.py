@@ -53,7 +53,7 @@ def get_config():
     config.optimizer.num_epochs = 20 #
     config.optimizer.batch_size = 48 #
     config.optimizer.split_batches = False
-    config.optimizer.num_workers = 8
+    config.optimizer.num_workers = 16
 
     config.optimizer.lmb = 5
     

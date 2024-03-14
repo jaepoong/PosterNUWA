@@ -27,9 +27,9 @@ TASK_INSTRUCTION = {
     "rico25": "I want to generate layout in the mobile app design format. ",
     "publaynet": "I want to generate layout in the document design format. ",
     "magazine": "I want to generate layout in the magazine design format. ",
-    "cgl" : "I want to generate layout in poster design format. "
+    "cgl" : "I want to generate layout in poster design format. ",
+    "pku" : "I want to generate layout in poster design format. "
 }
-
 #INSTRUCTION = {
 #    "cond_cate_to_size_pos": "please generate the layout html according to the categories I provide (in html format):\n###bbox html: {bbox_html}",
 #    "cond_cate_size_to_pos": "please generate the layout html according to the categories and size I provide (in html format):\n###bbox html: {bbox_html}",
@@ -50,6 +50,25 @@ INSTRUCTION = {
     "refinement" : "please refine the layout html according to the image I provide (in html format):\n###bbox html: {bbox_html}",#
     # completion 
     "completion" : "please complete the layout html according to the image and element I provide (in html format):\n###bbox html: {bbox_html}",#
+    
+
+}
+
+TEXT_INSTRUCTION = {
+    # c -> s,b
+    "cond_cate_to_size_pos": "please generate the layout html according to the categories and image I provide (in html format)\nText: {text}\n###bbox html: {bbox_html}",
+    # c,s -> b
+    "cond_cate_size_to_pos": "please generate the layout html according to the categories and size and image I provide (in html format)\nText: {text}\n###bbox html: {bbox_html}",
+    # c,b -> s
+    "cond_cate_pos_to_size" : "please generate the layout html according to the categories and position and image I provide (in html format)\nText: {text}\n###bbox html: {bbox_html}",#
+    # recover
+    "cond_random_mask": "please recover the layout html according to the bbox , categories, size, image I provide (in html format)\nText: {text}\n###bbox html: {bbox_html}",
+    # unconditional
+    "unconditional" : "plaese generate the layout html according to the image I provide (in html format)\nText: {text}\n###bbox html: {bbox_html}",#
+    # refinement
+    "refinement" : "please refine the layout html according to the image I provide (in html format)\nText: {text}\n###bbox html: {bbox_html}",#
+    # completion 
+    "completion" : "please complete the layout html according to the image and element I provide (in html format)\nText: {text}\n###bbox html: {bbox_html}",#
     
 
 }
@@ -117,7 +136,12 @@ DATASET_META = {
         4: "Embellishment",
         5: "Highlighted text"
         
-    }#
+    },
+    "pku" :{
+        1: "Text",
+        2: "Logo",
+        3: "Underlay"
+    },
 }
 
 # verborsed number

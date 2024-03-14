@@ -1,0 +1,360 @@
+[
+ {
+  "bbox": [
+   [
+    20,
+    552,
+    496,
+    639
+   ],
+   [
+    182,
+    677,
+    341,
+    712
+   ]
+  ],
+  "img_path": "O1CN01Qf8OrA1ZJHPOwDmKE_!!762073173-0-alimamazszw.png",
+  "text": [
+   "The dining chair!",
+   " Get it now"
+  ],
+  "index": 2603
+ },
+ {
+  "bbox": [
+   [
+    168,
+    665,
+    351,
+    707
+   ],
+   [
+    69,
+    102,
+    446,
+    217
+   ]
+  ],
+  "img_path": "O1CN01WTFFUe1j15qDOOtFq_!!2207875404487-0-alimamazszw.png",
+  "text": [
+   "Nice Meat!Buy Now"
+  ],
+  "index": 2617
+ },
+ {
+  "bbox": [
+   [
+    120,
+    220,
+    395,
+    258
+   ],
+   [
+    78,
+    120,
+    437,
+    192
+   ]
+  ],
+  "img_path": "O1CN01TMiYhC1NoAkkrhqA0_!!4079151616-0-alimamazszw.png",
+  "text": [
+   "Buy Now!",
+   "I've never seen this sofa before"
+  ],
+  "index": 2618
+ },
+ {
+  "bbox": [
+   [
+    104,
+    186,
+    410,
+    212
+   ],
+   [
+    46,
+    116,
+    467,
+    169
+   ]
+  ],
+  "img_path": "O1CN019ZgH4Z1MdLlzBYBE6_!!4091091457-0-alimamazszw.png",
+  "text": [
+   "Time-limited 40% coupons",
+   "Skin protection from the sun, against the blue light"
+  ],
+  "index": 2619
+ },
+ {
+  "bbox": [
+   [
+    202,
+    245,
+    312,
+    268
+   ],
+   [
+    111,
+    186,
+    406,
+    220
+   ],
+   [
+    90,
+    113,
+    426,
+    167
+   ]
+  ],
+  "img_path": "O1CN01dJggfr1NPRLXSQKco_!!845001562-0-alimamazszw.png",
+  "text": [
+   "Grab it! Time to buy it!",
+   "7.6K+ in the live",
+   " Let's do it now"
+  ],
+  "index": 2621
+ },
+ {
+  "bbox": [
+   [
+    132,
+    133,
+    394,
+    177
+   ],
+   [
+    78,
+    48,
+    443,
+    109
+   ]
+  ],
+  "img_path": "O1CN01gPo9Rl2LWeYDi3rHS_!!2207199700-0-alimamazszw.png",
+  "text": [
+   "You'll only have one left.",
+   "The price of the discount."
+  ],
+  "index": 2648
+ },
+ {
+  "bbox": [
+   [
+    56,
+    138,
+    456,
+    220
+   ],
+   [
+    193,
+    240,
+    317,
+    272
+   ]
+  ],
+  "img_path": "O1CN01hYwPD62CGJspktyDH_!!389788446-0-alimamazszw.png",
+  "text": [
+   "While activity",
+   "Try Now!"
+  ],
+  "index": 2653
+ },
+ {
+  "bbox": [
+   [
+    176,
+    525,
+    339,
+    566
+   ],
+   [
+    154,
+    605,
+    359,
+    635
+   ]
+  ],
+  "img_path": "O1CN01dvFLmj1UKaTsacTXa_!!4099872499-0-alimamazszw.png",
+  "text": [
+   "Brand-new product",
+   "Free for 24 days."
+  ],
+  "index": 2665
+ },
+ {
+  "bbox": [
+   [
+    115,
+    44,
+    399,
+    76
+   ],
+   [
+    67,
+    101,
+    449,
+    171
+   ]
+  ],
+  "img_path": "O1CN01jACY0a1M6NFcuJLq0_!!1651881385-0-alimamazszw.png",
+  "text": [
+   "One is also a wholesale price.",
+   "You get it"
+  ],
+  "index": 2689
+ },
+ {
+  "bbox": [
+   [
+    51,
+    88,
+    464,
+    140
+   ],
+   [
+    61,
+    281,
+    119,
+    334
+   ]
+  ],
+  "img_path": "O1CN016N5nb32EuHej8Kr1d_!!2434608804-0-alimamazszw.png",
+  "text": [
+   "A soft reading of 50 white wines.",
+   "Chai"
+  ],
+  "index": 2697
+ },
+ {
+  "bbox": [
+   [
+    103,
+    191,
+    417,
+    260
+   ],
+   [
+    84,
+    104,
+    442,
+    174
+   ]
+  ],
+  "img_path": "O1CN01hw60kT23CLsoBKGzD_!!3982167219-0-alimamazszw.png",
+  "text": [
+   "The bartender's real.",
+   "Big coupons."
+  ],
+  "index": 2706
+ },
+ {
+  "bbox": [
+   [
+    134,
+    182,
+    376,
+    216
+   ],
+   [
+    73,
+    103,
+    443,
+    168
+   ]
+  ],
+  "img_path": "O1CN01xWfkBl1SV0G0zpTzl_!!1771842251-0-alimamazszw.png",
+  "text": [
+   "Top 20 only",
+   "Purchase machine for SWITCH"
+  ],
+  "index": 2710
+ },
+ {
+  "bbox": [
+   [
+    158,
+    224,
+    367,
+    262
+   ],
+   [
+    50,
+    149,
+    477,
+    206
+   ]
+  ],
+  "img_path": "O1CN01fBKHr528TMh3KmQO8_!!2033717933-0-alimamazszw.png",
+  "text": [
+   "The game book you like.",
+   "Finally, the price is down!"
+  ],
+  "index": 2729
+ },
+ {
+  "bbox": [
+   [
+    31,
+    586,
+    483,
+    643
+   ]
+  ],
+  "img_path": "O1CN01lUoo0q1fzJSB3qAR1_!!4122054077-0-alimamazszw.png",
+  "text": [
+   "Shoes for 1 to 3-year-olds"
+  ],
+  "index": 2737
+ },
+ {
+  "bbox": [
+   [
+    202,
+    274,
+    312,
+    294
+   ],
+   [
+    107,
+    114,
+    418,
+    160
+   ],
+   [
+    114,
+    177,
+    427,
+    246
+   ]
+  ],
+  "img_path": "O1CN01AiXPIw23VaWwdHkfp_!!393467261-0-alimamazszw.png",
+  "text": [
+   "It's cheaper and safer.",
+   "That's a deal!",
+   "Click for the grab."
+  ],
+  "index": 2746
+ },
+ {
+  "bbox": [
+   [
+    129,
+    226,
+    384,
+    278
+   ],
+   [
+    60,
+    123,
+    453,
+    203
+   ]
+  ],
+  "img_path": "O1CN01egTodY1Nv2hFV6pCH_!!786621631-0-alimamazszw.png",
+  "text": [
+   "Limited number of persons",
+   "It's 11.11 cents."
+  ],
+  "index": 2833
+ }
+]

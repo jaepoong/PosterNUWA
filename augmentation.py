@@ -65,7 +65,7 @@ class Args:
     
     img_path : str = "data/cgl_dataset/cgl_inpainting_all"
     
-    consistency_num : int = 5
+    consistency_num : int = 10
     
     aug_num : int =3
     

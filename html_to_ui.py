@@ -92,7 +92,7 @@ def main(args):
     
     for i in range(num_data):
         img = data['imgs'][i]
-        bbox = data['labels'][i]
+        bbox = data['labels'][i] #
         # print("bbox : ", bbox)
         ex_bbox, ex_labels = get_bbox(bbox)
         img = draw_bbox(img, ex_bbox, ex_labels)

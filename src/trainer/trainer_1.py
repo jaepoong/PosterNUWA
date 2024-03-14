@@ -165,7 +165,7 @@ class Trainer:
 
             progress_bar.update(1)
             losses.setdefault("loss",[]).append(loss.detach().item())
-            if self.accelerator.sync_gradients:
+            if self.accelerator.is_main_process & self.accelerator.sync_gradients:
                 self.global_step += 1
                 progress_bar.update(1)
                 logs = {"loss": loss.detach().item(), "lr": self.lr_scheduler.get_last_lr()[0],
@@ -179,9 +179,9 @@ class Trainer:
             ckpts = list(self.conf.ckpt_dir.glob("checkpoint-*"))
             # sort by epoch
             ckpts = sorted(ckpts, key=lambda x: int(x.name.split("-")[1]))
-            if len(ckpts) > 5:
-                self.logger.info(f"Deleting checkpoint {ckpts[0]}")
-                shutil.rmtree(ckpts[0])
+            #if len(ckpts) > 5:
+            #    self.logger.info(f"Deleting checkpoint {ckpts[0]}")
+            #    shutil.rmtree(ckpts[0])
 
         if epoch%self.save_interval==0 or epoch==self.num_epochs-1 & self.accelerator.is_main_process:
             #self.accelerator.save_state(save_path)

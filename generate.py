@@ -7,7 +7,7 @@ import json
 import copy
 
 from transformers import LlamaTokenizer, LlamaForCausalLM, GenerationConfig
-from src.processor.blip_processors import Blip2ImageTrainProcessor,Blip2ImageEvalProcessor
+from src.processor.blip_processors import Blip2ImageTrainProcessor,Blip2ImageEvalProcessor,DinoImageProcessor
 
 from src.model.minigpt4 import MiniGPT4
 from tqdm import *
@@ -31,12 +31,14 @@ def split_string_by_delimiter(input_string, delimiter):
 
 # TODO customizing
 def main(
-    file_path: str = "/workspace/poong/PosterNUWA/data/cgl_dataset/for_posternuwa/html_format_img_instruct_all/test_numerical.jsonl",
-    base_model: str = "/workspace/poong/PosterNUWA/log_dir/train_stage2_without_augment_a100_deepspeed/checkpoints/checkpoint-8/pytorch_model.bin",
-    device: int=3,
-    output_dir: str="log_dir/train_stage2_without_augment_a100_deepspeed",
-    checkpoint: str="8",
+    file_path: str = "/data1/poong/tjfwownd/PosterNUWA/data/cgl_dataset/for_posternuwa/html_format_img_instruct_all_mask_and_all_condition/test_numerical.jsonl",
+    base_model: str = "/data1/poong/tjfwownd/PosterNUWA/log_dir/train_stage2_with_augment_dino_codellama/checkpoints/checkpoint-12/pytorch_model.bin",
+    device: int=1,
+    output_dir: str="/data1/poong/PosterNUWA/log_dir/train_stage2_with_augment_dino_codellama",
+    checkpoint: str="12",
     max_new_tokens: int=1024,
+    dino=True,
+    code_llama = True,
     vis : bool=True,
 ):
     assert base_model, (
@@ -56,21 +58,26 @@ def main(
     )
     
     device = f"cuda:{device}" if torch.cuda.is_available() else "cpu"
-
-    """
-    model = LlamaForCausalLM.from_pretrained(
-            base_model,
-            load_in_8bit=False,
-            torch_dtype=torch.float16,
-            device_map={"": device},
-        )"""
-    model = MiniGPT4(lora_r=64,low_resource=False)
+    if dino:
+        vit_model_name = "dino_v2"
+    else:
+        vit_model_name = "eval_clip_g"
+    
+    if code_llama:
+        llama_model = "models/codeLlama-7b-hf"
+    else:
+        llama_model = "models/Llama-2-7b-chat-hf"
+        
+    if dino:
+        image_processor = DinoImageProcessor()
+    else:
+        image_processor = Blip2ImageEvalProcessor()
+    model = MiniGPT4(lora_r=64,low_resource=False,vit_model = vit_model_name,llama_model = llama_model)
     model.load_state_dict(torch.load(base_model,map_location="cpu"))
     model = model.to(device)
     model.device = device
     #model.half()
     model.eval()
-    image_processor = Blip2ImageEvalProcessor()
 
     def evaluate(
         image,
@@ -89,6 +96,7 @@ def main(
             with torch.autocast(device_type="cuda"):
                 generation_output = model.generate(image,html_input,max_new_tokens=max_new_tokens,temperature=temperature,top_p=top_p,do_sample=do_sample)
         return generation_output
+
 
     with open(file_path, "r") as f:
         content = [json.loads(line) for line in f]

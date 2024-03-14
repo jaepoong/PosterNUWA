@@ -250,13 +250,6 @@ if __name__ == "__main__":
     parser.add_argument("--save_sample_img", type=bool, default=True)  
 
     args = parser.parse_args()
-        
-    
-        
-    
-    
-    
-    
     
     int_to_lable = DATASET_META.get(args.dataset_name)
     label_to_int = dict([(v, k) for k, v in int_to_lable.items()])

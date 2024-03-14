@@ -9,6 +9,8 @@ from typing import List
 import logging
 import random as rnd
 import random
+from transformers import AutoImageProcessor
+import torch
 
 image_processor = Blip2ImageTrainProcessor()
 text_processor = BlipCaptionProcessor()
@@ -54,23 +56,39 @@ class BaseDataset(Dataset):
             ann[key] = str(idx)
     
 class CCSBUDataset(BaseDataset):
-    def __init__(self, vis_processor, text_processor, location):
+    def __init__(self, vis_processor, text_processor, location,vit_model_name):
         super().__init__(vis_processor=vis_processor, text_processor=text_processor)
 
-        self.inner_dataset = wds.DataPipeline(
-            wds.ResampledShards(location),
-            wds.tarfile_to_samples(handler=wds.warn_and_continue),
-            wds.shuffle(1000, handler=wds.warn_and_continue),
-            wds.decode("pilrgb", handler=wds.warn_and_continue),
-            wds.to_tuple("jpg", "json", handler=wds.warn_and_continue),
-            wds.map_tuple(self.vis_processor, handler=wds.warn_and_continue),
-            wds.map(self.to_dict, handler=wds.warn_and_continue),
-        )
-
+        if vit_model_name =="eva_clip_g":
+            self.inner_dataset = wds.DataPipeline(
+                wds.ResampledShards(location),
+                wds.tarfile_to_samples(handler=wds.warn_and_continue),
+                wds.shuffle(1000, handler=wds.warn_and_continue),
+                wds.decode("pilrgb", handler=wds.warn_and_continue),
+                wds.to_tuple("jpg", "json", handler=wds.warn_and_continue),
+                #wds.map_tuple(self.vis_processor, handler=wds.warn_and_continue),
+                #wds.map(self.to_dict, handler=wds.warn_and_continue),
+            )
+        elif vit_model_name =="dino_v2":
+            self.inner_dataset = wds.DataPipeline(
+                wds.ResampledShards(location),
+                wds.tarfile_to_samples(handler=wds.warn_and_continue),
+                wds.shuffle(1000, handler=wds.warn_and_continue),
+                wds.decode("pilrgb", handler=wds.warn_and_continue),
+                wds.to_tuple("jpg", "json", handler=wds.warn_and_continue),
+                wds.map_tuple(self.vis_processor, handler=wds.warn_and_continue),
+                wds.map(self.to_dict_dino, handler=wds.warn_and_continue),
+            )
     def to_dict(self, sample):
         return {
             "labels": self.text_processor(sample[1]["caption"]),
             "image": sample[0]
+
+        }
+    def to_dict_dino(self, sample):
+        return {
+            "labels": self.text_processor(sample[1]["caption"]),
+            "image": torch.tensor(sample[0]['pixel_values'][0])
         }
 
 class ChainDataset(wds.DataPipeline):
@@ -83,9 +101,12 @@ class ChainDataset(wds.DataPipeline):
     Args:
         datasets (iterable of IterableDataset): datasets to be chained together
     """
-    def __init__(self, paths) -> None:
+    def __init__(self, paths,vit_model_name) -> None:
         super().__init__()
-        self.datasets = [CCSBUDataset(image_processor,text_processor,path).inner_dataset for path in paths]
+        image_processor = Blip2ImageTrainProcessor() 
+        if vit_model_name == "dino_v2":
+            image_processor = AutoImageProcessor.from_pretrained("facebook/dinov2-base")
+        self.datasets = [CCSBUDataset(image_processor,text_processor,path,vit_model_name).inner_dataset for path in paths]
         self.prob = []
         self.names = []
         for dataset in self.datasets:

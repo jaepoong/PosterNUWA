@@ -1,5 +1,5 @@
 from torch.utils.data import Dataset
-from transformers import PreTrainedTokenizer
+from transformers import PreTrainedTokenizer, AutoImageProcessor
 import json
 import random
 import torch
@@ -25,7 +25,7 @@ def split_string_by_delimiter(input_string, delimiter):
 def process_input(a):
     if isinstance(a, list):
         if len(a) > 0:
-            selected_element = random.choice(a)
+            selected_element = a[0]#random.choice(a)
             return selected_element
         else:
             return None  
@@ -35,14 +35,19 @@ def process_input(a):
         raise ValueError("Unsupported input type")
 
 class RawFileDataset(Dataset):  
-    def __init__(self, file,img_file_path ="data/cgl_dataset/augment_cgl",image_processor = Blip2ImageEvalProcessor()):  
+    def __init__(self, file,img_file_path ="data/cgl_dataset/augment_cgl",image_processor = Blip2ImageEvalProcessor(),vit_model_name = None):  
 
         with open(file, "r") as f:
             self.content = [json.loads(line) for line in f]
-        self.cond_type = ["cond_cate", "cond_cate_size", "cond_cate_pos","unconditional","recover"]#,"completion","refinement"]
-        self.sample_prob = [1, 1, 1, 2, 2]#, 2, 2]  # custom your sampling weight here
+        self.cond_type = ["cond_cate", "cond_cate_size", "cond_cate_pos", "unconditional", "recover", "completion","refinement"]
+        self.sample_prob = [1, 1, 1, 2, 2, 2, 2]  # custom your sampling weight here
         self.img_file_path = img_file_path #
         self.image_processor = image_processor
+        if vit_model_name == "dino_v2":
+            self.image_processor = AutoImageProcessor.from_pretrained("facebook/dinov2-base")
+        
+        self.vit_model_name = vit_model_name
+            
     def __len__(self):
         return len(self.content)
 
@@ -54,8 +59,8 @@ class RawFileDataset(Dataset):
         cond_cate_pos_to_size_seq_modeling = data["cond_cate_pos_to_size_seq_modeling"]
         unconditional_seq_modeling = data["unconditional_seq_modeling"]
         cond_recover_mask_seq_modeling = data["cond_recover_mask_seq_modeling"]
-        #completion_seq_modeling = data["completion_seq_modeling"]#
-        #refinement_seq_modeling = data["refinement_seq_modeling"]#
+        completion_seq_modeling = data["completion_seq_modeling"]#
+        refinement_seq_modeling = data["refinement_seq_modeling"]#
         name = process_input(data["name"]) # if list output random element, str output corresponding str
         
         if self.img_file_path :
@@ -67,15 +72,19 @@ class RawFileDataset(Dataset):
             img = None
         
         if self.image_processor:
-            img = self.image_processor(img)
+            if self.vit_model_name =="dino_v2":
+                img = torch.tensor(self.image_processor(img)['pixel_values'][0])
+            else:
+                img = self.image_processor(img)
+            
         
         instruct_1,answer_1 = split_string_by_delimiter(cond_cate_to_size_pos_seq_modeling,"<MID>")
         instruct_2,answer_2 = split_string_by_delimiter(cond_cate_size_to_pos_seq_modeling,"<MID>")
         instruct_3,answer_3 = split_string_by_delimiter(cond_cate_pos_to_size_seq_modeling,"<MID>")
         instruct_4,answer_4 = split_string_by_delimiter(unconditional_seq_modeling,"<MID>")
         instruct_5,answer_5 = split_string_by_delimiter(cond_recover_mask_seq_modeling,"<MID>")
-        #instruct_6,answer_6 = split_string_by_delimiter(completion_seq_modeling,"<MID>")
-        #instruct_7,answer_7 = split_string_by_delimiter(refinement_seq_modeling,"<MID>")
+        instruct_6,answer_6 = split_string_by_delimiter(completion_seq_modeling,"<MID>")
+        instruct_7,answer_7 = split_string_by_delimiter(refinement_seq_modeling,"<MID>")
 
         instances = {
             "cond_cate":{
@@ -105,6 +114,18 @@ class RawFileDataset(Dataset):
             "recover": {
                 "input": instruct_5.strip(),
                 "labels": answer_5.strip(),
+                "image" : img,
+                "name" : name
+            },
+            "completion": {
+                "input": instruct_6.strip(),
+                "labels": answer_6.strip(),
+                "image" : img,
+                "name" : name
+            },      
+            "refinement": {
+                "input": instruct_7.strip(),
+                "labels": answer_7.strip(),
                 "image" : img,
                 "name" : name
             }

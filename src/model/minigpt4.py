@@ -13,7 +13,7 @@ from src.model.Qformer import BertConfig, BertLMHeadModel
 class MiniGPT4(MiniGPTBase):
     def __init__(
             self,
-            vit_model="eva_clip_g",
+            vit_model="eva_clip_g", # dino_v2
             q_former_model="https://storage.googleapis.com/sfr-vision-language-research/LAVIS/models/BLIP2/blip2_pretrained_flant5xxl.pth",
             img_size = 224,
             drop_path_rate=0,
@@ -52,6 +52,7 @@ class MiniGPT4(MiniGPTBase):
             lora_alpha=lora_alpha,
             lora_dropout=lora_dropout,
         )
+        self.vit_model = vit_model
 
         self.has_qformer = has_qformer
         if self.has_qformer:
@@ -64,9 +65,13 @@ class MiniGPT4(MiniGPTBase):
             img_f_dim = self.Qformer.config.hidden_size
             print('Loading Q-Former Done')
         else:
-            img_f_dim = self.visual_encoder.num_features * 4
             print('Do not use Q-Former here.')
-
+            if vit_model =="eva_clip_g":
+                print('Vit_model eva_clip_g')
+                img_f_dim = self.visual_encoder.num_features * 4
+            elif vit_model =="dino_v2":
+                print('Vit_model dino_v2')
+                img_f_dim = self.visual_encoder.config.hidden_size * 4
         self.llama_proj = nn.Linear(
             img_f_dim, self.llama_model.config.hidden_size
         )
@@ -80,7 +85,6 @@ class MiniGPT4(MiniGPTBase):
             print('Prompt Example \n{}'.format(self.prompt_list))
         else:
             self.prompt_list = []
-
 
     def init_Qformer(self, num_query_token, vision_width, freeze):
         encoder_config = BertConfig.from_pretrained("bert-base-uncased")
@@ -120,7 +124,11 @@ class MiniGPT4(MiniGPTBase):
             image = image.reshape(-1, *image.shape[-3:])
 
         with self.maybe_autocast():
-            image_embeds = self.ln_vision(self.visual_encoder(image)).to(device)
+            if self.vit_model =="eva_clip_g":
+                image_embeds = self.ln_vision(self.visual_encoder(image)).to(device)
+            elif self.vit_model =="dino_v2":
+                image_embeds = self.visual_encoder(image).last_hidden_state.to(device)
+
             if self.has_qformer:
                 image_atts = torch.ones(image_embeds.size()[:-1], dtype=torch.long).to(device)
 

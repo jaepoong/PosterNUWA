@@ -29,8 +29,8 @@ def main(*args, **kwargs):
 
     accelerator = Accelerator(
         split_batches=config.optimizer.split_batches,
-        #gradient_accumulation_steps=config.optimizer.gradient_accumulation_steps,
-        #mixed_precision=config.optimizer.mixed_precision,
+        gradient_accumulation_steps=config.optimizer.gradient_accumulation_steps,
+        mixed_precision=config.optimizer.mixed_precision,
         project_dir=config.log_dir,
         dispatch_batches = False
     )
@@ -39,11 +39,11 @@ def main(*args, **kwargs):
         logger.info("Loading data.")
 
     if config.type == "stage1":
-        train_data = ChainDataset(config.train_img_path)
-        val_data = ChainDataset(config.train_img_path)
+        train_data = ChainDataset(config.train_img_path,config.vit_model_name)
+        val_data = ChainDataset(config.train_img_path,config.vit_model_name)
     elif config.type == "stage2":
-        train_data = RawFileDataset(config.train_json,img_file_path=config.train_img_path)
-        val_data = RawFileDataset(config.val_json,img_file_path=config.val_img_path)
+        train_data = RawFileDataset(config.train_json, img_file_path = config.train_img_path, vit_model_name = config.vit_model_name)
+        val_data = RawFileDataset(config.val_json, img_file_path = config.val_img_path, vit_model_name = config.vit_model_name)
         logger.info(f"Train data length : {len(train_data)} \n Val_data_length : {len(val_data)} ")
     else:
         ValueError("Invalid value for 'config.type', you must set it for stage1 or stage2")
@@ -57,6 +57,7 @@ def main(*args, **kwargs):
         logger.info(config)
     
     model = MiniGPT4(
+        vit_model = config.vit_model_name,
         lora_r = config.lora_r,
         prompt_path = config.prompt_path,
         prompt_template = config.prompt_template,

@@ -12,7 +12,7 @@ from peft import (
     get_peft_model,
     prepare_model_for_int8_training,
 )
-
+from transformers import Dinov2Model
 from src.model.eva_vit import create_eva_vit_g
 
 
@@ -28,29 +28,43 @@ class BaseModel(nn.Module):
     ):
         logging.info('Loading VIT')
 
-        assert model_name == "eva_clip_g", "vit model must be eva_clip_g for current version of MiniGPT-4"
-        if not freeze: # True, False
-            precision = "fp32"  # fp16 is not for training
+        assert model_name == "eva_clip_g" or model_name == "dino_v2", "vit model must be eva_clip_g for current version of MiniGPT-4"
+        if model_name =="eva_clip_g":
+            if not freeze: # True, False
+                precision = "fp32"  # fp16 is not for training
 
-        visual_encoder = create_eva_vit_g(
-            img_size, drop_path_rate, use_grad_checkpoint, precision
-        )
+            visual_encoder = create_eva_vit_g(
+                img_size, drop_path_rate, use_grad_checkpoint, precision
+            )
 
-        ln_vision = LayerNorm(visual_encoder.num_features)
+            ln_vision = LayerNorm(visual_encoder.num_features)
 
-        if freeze:
-            for name, param in visual_encoder.named_parameters():
-                param.requires_grad = False
-            visual_encoder = visual_encoder.eval()
-            visual_encoder.train = disabled_train
-            for name, param in ln_vision.named_parameters():
-                param.requires_grad = False
-            ln_vision = ln_vision.eval()
-            ln_vision.train = disabled_train
-            logging.info("freeze vision encoder")
+            if freeze:
+                for name, param in visual_encoder.named_parameters():
+                    param.requires_grad = False
+                visual_encoder = visual_encoder.eval()
+                visual_encoder.train = disabled_train
+                for name, param in ln_vision.named_parameters():
+                    param.requires_grad = False
+                ln_vision = ln_vision.eval()
+                ln_vision.train = disabled_train
+                logging.info("freeze vision encoder")
 
-        logging.info('Loading VIT Done')
-        return visual_encoder, ln_vision
+            logging.info('Loading VIT Done')
+            return visual_encoder, ln_vision
+        elif model_name =="dino_v2":
+            visual_encoder = Dinov2Model.from_pretrained("facebook/dinov2-base")
+            if freeze:
+                for name, param in visual_encoder.named_parameters():
+                    param.requires_grad = False
+                visual_encoder = visual_encoder.eval()
+                visual_encoder.train = disabled_train
+                logging.info("freeze vision encoder")
+
+            logging.info('Loading Dino-v2 Done')
+            return visual_encoder, ""
+        
+            
 
     def init_llm(self, llama_model_path, low_resource=False, low_res_device=0, lora_r=0,
                  lora_target_modules=["q_proj","v_proj"], **lora_kargs):
@@ -119,7 +133,6 @@ class BaseModel(nn.Module):
 
         # logging.info("Missing keys {}".format(msg.missing_keys))
         logging.info("load checkpoint from %s" % url_or_filename)
-
         return msg
 
     def show_n_params(self, return_str=True):

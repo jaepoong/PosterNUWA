@@ -123,7 +123,9 @@ def metrics_val(img_size, clses, boxes):
         cls = np.array(cls, dtype=int)[:,np.newaxis]
         box = np.array(box, dtype=int)
         mask = (cls > 0).reshape(-1)
+
         mask_box = box[mask]
+
         total_elem += len(mask_box)
         for mb in mask_box:
             xl, yl, xr, yr = mb
@@ -157,9 +159,9 @@ def metrics_uti(img_names, clses, boxes):
     metrics = 0
     for idx, name in enumerate(img_names):
         pic_1 = np.array(Image.open(os.path.join("data/cgl_dataset/PFPN_salient_imgs_cgl", 
-                                               name)).convert("L").resize((513, 750))) / 255
+                                               name.replace("jpg","png"))).convert("L").resize((513, 750))) / 255
         pic_2 = np.array(Image.open(os.path.join("data/cgl_dataset/BasNet_salient_imgs_cgl", 
-                                               name)).convert("L").resize((513, 750))) / 255
+                                               name.replace("jpg","png"))).convert("L").resize((513, 750))) / 255
         pic = np.maximum(pic_1, pic_2)
         #pic = np.array(Image.open(os.path.join("data/cgl_dataset/salient_imgs_cgl", 
         #                                       name)).convert("L").resize((513, 750))) / 255
@@ -191,7 +193,7 @@ def metrics_rea(img_names, clses, boxes):
     '''
     metrics = 0
     for idx, name in enumerate(img_names):
-        pic = Image.open(os.path.join("data/cgl_dataset/cgl_inpainting_all", name)).convert("RGB").resize((513, 750))
+        pic = Image.open(os.path.join("data/cgl_dataset/cgl_inpainting_all", name.replace("jpg","png"))).convert("RGB").resize((513, 750))
         img_g_xy = np.array(img_to_g_xy(pic)) / 255 # gradient
         cal_mask = np.zeros_like(img_g_xy)
         
@@ -234,7 +236,10 @@ def metrics_ove(clses, boxes):
             for j in range(i + 1, n):
                 bb2 = mask_box[j]
                 ove += metrics_iou(bb1, bb2)
-        metrics += ove / n
+        try:
+            metrics += ove / n
+        except:
+            pass
     return metrics / len(clses)
 
 def metrics_und_l(clses, boxes):
@@ -372,9 +377,9 @@ def metrics_occ(img_names, clses, boxes):
     metrics = 0
     for idx, name in enumerate(img_names):
         pic_1 = np.array(Image.open(os.path.join("data/cgl_dataset/PFPN_salient_imgs_cgl", 
-                                               name)).convert("L").resize((513, 750))) / 255
+                                               name.replace("jpg","png"))).convert("L").resize((513, 750))) / 255
         pic_2 = np.array(Image.open(os.path.join("data/cgl_dataset/BasNet_salient_imgs_cgl", 
-                                               name)).convert("L").resize((513, 750))) / 255
+                                               name.replace("jpg","png"))).convert("L").resize((513, 750))) / 255
         pic = np.maximum(pic_1, pic_2)
         #pic = np.array(Image.open(os.path.join("data/cgl_dataset/salient_imgs_cgl", 
         #                                       name)).convert("L").resize((513, 750))) / 255
@@ -402,16 +407,17 @@ def save_figs(names, clses, boxes, save_dir):
     except:
         pass
     for idx, name in enumerate(names):
-        pic = Image.open(os.path.join("data/cgl_dataset/cgl_inpainting_all", name)).convert("RGB").resize((513, 750))
+        pic = Image.open(os.path.join("data/cgl_dataset/cgl_inpainting_all", name.replace("jpg","png"))).convert("RGB").resize((513, 750))
         cls = np.array(clses[idx], dtype=int)
         box = np.array(boxes[idx], dtype=int)
         drawn = draw_box(pic, zip(cls, box), zip(cls, box))
-        drawn.save(os.path.join(save_dir, name.replace(".", "_.")))
+        drawn.save(os.path.join(save_dir, name.replace("jpg","png")))
 
 def main():
     no = 1
-    save_dir = f"output/result_gt_plot/"
-    log_dir = "log_dir/train_stage2_with_augment_a100_deepspeed/generated_sample/16"
+    save_dir = f"/home/poong/tjfwownd/PosterNUWA/log_dir/DS_GAN/CGL-Dataset/generated_sample"
+    log_dir = "/data1/poong/tjfwownd/PosterNUWA/log_dir/train_stage2_with_augment_dino_codellama/generated_sample/16"
+    print(log_dir)
     img_path = os.path.join(log_dir,"text_order.json")
     
     clx_path = os.path.join(log_dir,"clses.json")#"log_dir/train_stage2_with_all_dataset_non_text/generated_sample/clses.json"
@@ -420,7 +426,6 @@ def main():
     box_path = os.path.join(log_dir,"box.json")#"log_dir/train_stage2_with_all_dataset_non_text/generated_sample/box.json"
     box_gt_path = os.path.join(log_dir,"box_gt.json") #"log_dir/train_stage2_with_all_dataset_non_text/generated_sample/box_gt.json"
 
-    
     with open(box_path, "r") as f:
         boxes = json.load(f)
     with open(box_gt_path, "r") as f:
@@ -436,44 +441,90 @@ def main():
 
     print("len:", len(names))
     
-    cal_fid = True
-    if cal_fid:
-        fid_model = LayoutFID("models/LayoutNet/layoutnet.pth.tar")
-        fid = cal_layout_fid(fid_model,boxes,boxes_gt,clses,clses_gt)
-        print("metric_layout_fid:",fid)
         
     #boxes[:, :, ::2] *= 513
     #boxes[:, :, 1::2] *= 750 # box좌표계는 x_min,y_min, x_max,y_max
     
-    #save_figs(names, clses_gt, boxes_gt, save_dir)
+    #save_figs(names, clses, boxes, save_dir)
     print("-------------GT eval-----------------")
-    
-    print("metrics_val:", metrics_val((513, 750), clses_gt, boxes_gt))
+    gt_val = metrics_val((513, 750), clses_gt, boxes_gt)
+    print("metrics_val:", gt_val)
     clses_gt = getRidOfInvalid((513, 750), clses_gt, boxes_gt)
+    gt_ove = metrics_ove(clses_gt, boxes_gt)
+    gt_ali = metrics_ali(clses_gt, boxes_gt)
+    gt_und_l = metrics_und_l(clses_gt, boxes_gt)
+    gt_und_s = metrics_und_s(clses_gt, boxes_gt)
+    gt_uti = metrics_uti(names, clses_gt, boxes_gt)
+    gt_occ = metrics_occ(names, clses_gt, boxes_gt)
+    gt_rea = metrics_rea(names, clses_gt, boxes_gt)
     
-    print("metrics_ove:", metrics_ove(clses_gt, boxes_gt))
-    print("metrics_ali:", metrics_ali(clses_gt, boxes_gt))
-    print("metrics_und_l:", metrics_und_l(clses_gt, boxes_gt))
-    print("metrics_und_s:", metrics_und_s(clses_gt, boxes_gt))
+    print("metrics_ove:", gt_ove)
+    print("metrics_ali:", gt_ali)
+    print("metrics_und_l:", gt_und_l)
+    print("metrics_und_s:", gt_und_s)
     
-    print("metrics_uti:", metrics_uti(names, clses_gt, boxes_gt))
-    print("metrics_occ:", metrics_occ(names, clses_gt, boxes_gt))
-    print("metrics_rea:", metrics_rea(names, clses_gt, boxes_gt))
+    print("metrics_uti:", gt_uti)
+    print("metrics_occ:", gt_occ)
+    print("metrics_rea:", gt_rea)
     
     print("-------------unconditional eval-----------------")
-    print("metrics_val:", metrics_val((513, 750), clses, boxes))
+    val = metrics_val((513, 750), clses, boxes)
+    print("metrics_val:", val)
     clses = getRidOfInvalid((513, 750), clses, boxes)
+    ove = metrics_ove(clses, boxes)
+    ali = metrics_ali(clses, boxes)
+    und_l = metrics_und_l(clses, boxes)
+    und_s = metrics_und_s(clses, boxes)
+    uti = metrics_uti(names, clses, boxes)
+    occ = metrics_occ(names, clses, boxes)
+    rea = metrics_rea(names, clses, boxes)
     
-    print("metrics_ove:", metrics_ove(clses, boxes))
-    print("metrics_ali:", metrics_ali(clses, boxes))
-    print("metrics_und_l:", metrics_und_l(clses, boxes))
-    print("metrics_und_s:", metrics_und_s(clses, boxes))
+    print("metrics_ove:", ove)
+    print("metrics_ali:", ali)
+    print("metrics_und_l:", und_l)
+    print("metrics_und_s:", und_s)
     
-    print("metrics_uti:", metrics_uti(names, clses, boxes))
-    print("metrics_occ:", metrics_occ(names, clses, boxes))
-    print("metrics_rea:", metrics_rea(names, clses, boxes))
+    print("metrics_uti:", uti)
+    print("metrics_occ:", occ)
+    print("metrics_rea:", rea)
+    
+    cal_fid = True
+    if cal_fid:
+        fid_model = LayoutFID("models/LayoutNet/layoutnet.pth.tar")
+        fid = cal_layout_fid(fid_model,boxes,boxes_gt,clses,clses_gt,pku=False)
+        print("metric_layout_fid:",fid)
+    txt_file = True
+    if txt_file : 
+        f = open(os.path.join(log_dir,"eval.txt") , "w")
+        f.write("-------------GT eval-----------------\n")
+        f.write("metrics_val:"+str(gt_val)+"\n")
+        f.write("metrics_ove:"+str(gt_ove)+"\n")
+        f.write("metrics_ali:"+str(gt_ali)+"\n")
+        f.write("metrics_und_l:"+str(gt_und_l)+"\n")
+        f.write("metrics_und_s:"+str(gt_und_s)+"\n")
+        f.write("metrics_uti:"+str(gt_uti)+"\n")
+        f.write("metrics_occ:"+str(gt_occ)+"\n")
+        f.write("metrics_rea:"+str(gt_rea)+"\n")
+
+        f.write("-------------unconditional eval-----------------\n")
+        f.write("metrics_val:"+str(val)+"\n")
+        f.write("metrics_ove:"+str(ove)+"\n")
+        f.write("metrics_ali:"+str(ali)+"\n")
+        f.write("metrics_und_l:"+str(und_l)+"\n")
+        f.write("metrics_und_s:"+str(und_s)+"\n")
+        f.write("metrics_uti:"+str(uti)+"\n")
+        f.write("metrics_occ:"+str(occ)+"\n")
+        f.write("metrics_rea:"+str(rea)+"\n")
+        
+        if cal_fid:
+            f.write("metric_layout_fid:"+str(fid))
+        
+        f.close()
     
 
      
 if __name__ == "__main__":
     main()
+    
+#CUDA_VISIBLE_DEVICES=6,7 accelerate launch --num_processes=2 --gpu_ids="all" main.py --config src/common/configs_stage1_dino.py --workdir train_stage1_dino  >> log_dir/train_stage1_dino/log.txt 2>&1
+# CUDA_VISIBLE_DEVICES=2,5 accelerate launch --num_processes=2 --gpu_ids="all" main.py --config src/common/configs_stage1_dino_codellama.py --workdir train_stage1_dino_code_llama >> log_dir/train_stage1_dino_code_llama/log.txt 2>&1

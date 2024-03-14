@@ -101,7 +101,7 @@ class MiniGPTBase(BaseModel):
         # inputs_embds : input + target
         # input_lens : input_embeds중 입력부분
         bos = torch.ones_like(part_targets[:, :1]) * self.llama_tokenizer.bos_token_id
-        # 
+        
         bos_embeds = self.embed_tokens(bos)
         bos_atts = cond_atts[:, :1]
         # add bos token at the begining
