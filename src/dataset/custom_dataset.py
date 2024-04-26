@@ -22,11 +22,15 @@ def split_string_by_delimiter(input_string, delimiter):
         # 특정 문자(delimiter)를 찾을 수 없는 경우, 원래 문자열과 빈 문자열을 반환합니다.
         return input_string, ""
 
-def process_input(a):
+def process_input(a,aug=False):
     if isinstance(a, list):
         if len(a) > 0:
-            selected_element = a[0]#random.choice(a)
-            return selected_element
+            if aug:
+                selected_element = random.choice(a)
+                return selected_element
+            else:
+                selected_element = a[0]
+                return selected_element
         else:
             return None  
     elif isinstance(a, str):
@@ -35,7 +39,7 @@ def process_input(a):
         raise ValueError("Unsupported input type")
 
 class RawFileDataset(Dataset):  
-    def __init__(self, file,img_file_path ="data/cgl_dataset/augment_cgl",image_processor = Blip2ImageEvalProcessor(),vit_model_name = None):  
+    def __init__(self, file,img_file_path ="data/cgl_dataset/augment_cgl",image_processor = Blip2ImageEvalProcessor(),vit_model_name = None,aug=False):  
 
         with open(file, "r") as f:
             self.content = [json.loads(line) for line in f]
@@ -45,7 +49,7 @@ class RawFileDataset(Dataset):
         self.image_processor = image_processor
         if vit_model_name == "dino_v2":
             self.image_processor = AutoImageProcessor.from_pretrained("facebook/dinov2-base")
-        
+        self.aug =aug
         self.vit_model_name = vit_model_name
             
     def __len__(self):
@@ -61,7 +65,7 @@ class RawFileDataset(Dataset):
         cond_recover_mask_seq_modeling = data["cond_recover_mask_seq_modeling"]
         completion_seq_modeling = data["completion_seq_modeling"]#
         refinement_seq_modeling = data["refinement_seq_modeling"]#
-        name = process_input(data["name"]) # if list output random element, str output corresponding str
+        name = process_input(data["name"],aug=self.aug) # if list output random element, str output corresponding str
         
         if self.img_file_path :
             try: 

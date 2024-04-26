@@ -42,8 +42,8 @@ def main(*args, **kwargs):
         train_data = ChainDataset(config.train_img_path,config.vit_model_name)
         val_data = ChainDataset(config.train_img_path,config.vit_model_name)
     elif config.type == "stage2":
-        train_data = RawFileDataset(config.train_json, img_file_path = config.train_img_path, vit_model_name = config.vit_model_name)
-        val_data = RawFileDataset(config.val_json, img_file_path = config.val_img_path, vit_model_name = config.vit_model_name)
+        train_data = RawFileDataset(config.train_json, img_file_path = config.train_img_path, vit_model_name = config.vit_model_name,aug = config.aug)
+        val_data = RawFileDataset(config.val_json, img_file_path = config.val_img_path, vit_model_name = config.vit_model_name, aug=config.aug)
         logger.info(f"Train data length : {len(train_data)} \n Val_data_length : {len(val_data)} ")
     else:
         ValueError("Invalid value for 'config.type', you must set it for stage1 or stage2")

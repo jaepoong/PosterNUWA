@@ -416,7 +416,7 @@ def save_figs(names, clses, boxes, save_dir):
 def main():
     no = 1
     save_dir = f"/home/poong/tjfwownd/PosterNUWA/log_dir/DS_GAN/CGL-Dataset/generated_sample"
-    log_dir = "/data1/poong/tjfwownd/PosterNUWA/log_dir/train_stage2_with_augment_dino_codellama/generated_sample/16"
+    log_dir = "/data1/poong/tjfwownd/PosterNUWA/log_dir/train_stage2_with_augment_dino_codellama_M/generated_sample/12"
     print(log_dir)
     img_path = os.path.join(log_dir,"text_order.json")
     

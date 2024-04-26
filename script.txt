@@ -1,1 +1,10 @@
 CUDA_VISIBLE_DEVICES=2,3 accelerate launch --num_processes=2 main.py --config src/common/configs_stage1.py --workdir stage1_all
+
+ python convertHTML/build_code_jj2.py   --model_path_or_name models/Llama-2-7b-chat-hf  --dataset_name cgl --dataset_path data/cgl_dataset/for_posternuwa  --save_path data/cgl_dataset/for_posternuwa/html_format_img_instruct_mask_all_condition  --bbox_quantization code  --consistency_num 15  --add_task_instruction;
+ python convertHTML/build_code_jj2.py   --model_path_or_name models/Llama-2-7b-chat-hf  --dataset_name cgl --dataset_path data/cgl_dataset/for_posternuwa  --save_path data/cgl_dataset/for_posternuwa/html_format_img_instruct_mask_all_condition  --bbox_quantization code  --consistency_num 15  --add_task_instruction --build_testing_set;
+
+
+python convertHTML/build_code_jj2.py   --model_path_or_name models/Llama-2-7b-chat-hf  --dataset_name pku --dataset_path data/PKU_PosterLayout   --save_path data/PKU_PosterLayout/for_posternuwa/html_format_img_instruct_all_mask_and_all_condition  --bbox_quantization code   --consistency_num 15  --add_task_instruction;
+python convertHTML/build_code_jj2.py   --model_path_or_name models/Llama-2-7b-chat-hf  --dataset_name pku --dataset_path data/PKU_PosterLayout   --save_path data/PKU_PosterLayout/for_posternuwa/html_format_img_instruct_all_mask_and_all_condition  --bbox_quantization code   --consistency_num 15  --add_task_instruction --build_testing_set;
+
+DS_SKIP_CUDA_CHECK=1 CUDA_VISIBLE_DEVICES=0,3 accelerate launch --num_processes=2 --gpu_ids='all'  main.py  --config src/common/configs_stage2_dino_code_llama_pku_subset.py --workdir train_stage2_without_augment_dino_codellama_pku_aug_1000 >> log_dir/train_stage2_without_augment_dino_codellama_pku_aug_1000/log.txt 2>&1

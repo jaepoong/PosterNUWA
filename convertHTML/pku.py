@@ -21,7 +21,7 @@ class PKUDataset(BaseDataset):
         self.dir = dir
         self.img = os.listdir(os.path.join(self.dir,"train","inpainted_poster"))
         self.img = [item for item in self.img if '1739' not in item] # This index image do not have any layout, so make hesitation.
-        self.poster_name = list(map(lambda x: "train/" + x.replace("_mask", ""), self.img))
+        self.poster_name = list(map(lambda x: "train/" + x.replace("_mask", ""), self.img))[:6000] # 1000, 3000, 5000, all
         super().__init__(dir,split,transform)
         self.N_category = self.num_classes
         self.dataset_name = "pku"
@@ -48,7 +48,13 @@ class PKUDataset(BaseDataset):
                 cls = [cls[i] for i in cls_mask_index]
                 box = [box[i] for i in cls_mask_index]
             name = self.poster_name[i].split("/")[-1]
-            name = name.split('.')[0]+"_mask."+name.split('.')[1]
+            #name = name.split('.')[0]+"_mask."+name.split('.')[1]
+            name = [name.split('.')[0]+"_mask."+name.split('.')[1]]
+            
+            for j in range(3):#
+                aug_name = name[0].split('.')[0]+f"_aug{j}."+name[0].split('.')[1]#
+                name.append(aug_name)#
+
             
             attr = {
                 "name" : name,
@@ -75,3 +81,5 @@ class PKUDataset(BaseDataset):
             torch.save(self.collate(data_list[s[0] : s[1]]), file_obj)
         with fs.open(self.processed_paths[2], "wb") as file_obj:
             torch.save(self.collate(data_list[s[1] :]), file_obj)     
+
+pku = PKUDataset("/data1/poong/PosterNUWA/data/PKU_PosterLayout","train",25)

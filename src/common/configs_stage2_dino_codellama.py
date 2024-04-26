@@ -16,6 +16,7 @@ def get_config():
     config.val_img_path = "data/cgl_dataset/augment_cgl"
 
     config.resume_from_checkpoint = None
+    config.aug = False
 
     config.type = "stage2"
     config.vit_model_name = "dino_v2" #"eva_clip_g"
@@ -56,12 +57,12 @@ def get_config():
     config.optimizer.lr = 0.0001
 
     config.optimizer.num_epochs = 100 #
-    config.optimizer.batch_size = 4 #
+    config.optimizer.batch_size = 2 #
     config.optimizer.split_batches = False
     config.optimizer.num_workers = 8
 
     config.optimizer.lmb = 5
-    
+
 
     if config.optimizer.num_gpus == 0:
         config.device = 'cpu'

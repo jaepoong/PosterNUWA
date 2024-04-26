@@ -93,13 +93,13 @@ to_tensor = transforms.ToTensor()
 #metric = CLIPScore(model_name_or_path="openai/clip-vit-base-patch16").to(device)
 model, preprocess = dreamsim(pretrained=True,cache_dir=".cache") 
     
-img_path = "data/PKU_PosterLayout/train/inpainted_poster"
+img_path = "/data1/poong/tjfwownd/PosterNUWA/data/cgl_dataset/radm_dataset/RADM_dataset/images/test"
 img_paths = os.listdir(img_path)
 img_paths = img_paths[len(img_paths)//2:] # 두번째는 이거 고쳐서
 
 consistency_num = 10
 aug_num = 3
-aug_save_path = "data/PKU_PosterLayout/train/pku_aug"
+aug_save_path = "/data1/poong/tjfwownd/PosterNUWA/data/cgl_dataset/radm_dataset/RADM_augmentation_test/images"
 cont = {}#
 os.makedirs(aug_save_path,exist_ok=True)
 
@@ -141,9 +141,10 @@ for i in range(len(img_paths)):
     max_indices = sorted(range(len(aug_score)), key=lambda i: aug_score[i], reverse=True)[:aug_num]
     selected_images = [samples[i] for i in max_indices]
     
-    orig_image.resize(size).save(os.path.join(aug_save_path,img_paths[i]))
+    #orig_image.resize(size).save(os.path.join(aug_save_path,img_paths[i]))
     for j,selected_image in enumerate(selected_images):
         selected_save_path = img_paths[i].split(".")[0]+f"_aug{j}."+img_paths[i].split(".")[1]
+        #selected_save_path = img_paths[i].split(".")[0]+f"_aug{j}."+img_paths[i].split(".")[1]
         selected_image.resize(size).save(os.path.join(aug_save_path, selected_save_path))
     
     progress_bar.update(1)

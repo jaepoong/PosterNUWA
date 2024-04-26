@@ -16,6 +16,7 @@ def get_config():
     config.val_img_path = "data/cgl_dataset/cgl_inpainting_all"
 
     config.resume_from_checkpoint = None
+    config.aug = False
 
     config.type = "stage2"
     config.vit_model_name = "eva_clip_g"

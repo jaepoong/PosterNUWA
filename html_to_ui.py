@@ -23,14 +23,15 @@ from PIL import Image, ImageDraw
 import copy
 
 DATASET_COLOR = {
-    1: "#FF0000",       # 빨
-    2: "#FFA500",       # 주
-    3: "#FFFF00",       # 노
-    4: "#008000",       # 초
+    1: '#929F29', #"#FF0000",       # 빨 , logo 
+    2: '#1FA39A', #"#FFA500",       # 주 , text
+    3: '#987FF2', #"#FFFF00",       # 노 , underlay
+    4: '#F56881', #"#008000"        # 초 , emblishment
     5: "#0000FF"        # 파
 }
 int_to_lable = DATASET_META.get("cgl")
 label_to_int = dict([(v, k) for k, v in int_to_lable.items()])
+
 def extract_WH(s):
     pattern = r'<svg width="([\d.]+)" height="([\d.]+)">'  
     match = re.search(pattern, s)  

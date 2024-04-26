@@ -415,7 +415,7 @@ def save_figs(names, clses, boxes, save_dir):
 def main():
     no = 1
     save_dir = f"output/result_gt_plot/"
-    log_dir = "/data1/poong/PosterNUWA/log_dir/train_stage2_with_augment_dino_codellama/generated_sample/16_f"
+    log_dir = "/data1/poong/tjfwownd/PosterNUWA/log_dir/layout_prompter/PKU/0"
     print(log_dir)
     img_path = os.path.join(log_dir,"text_order.json")
     

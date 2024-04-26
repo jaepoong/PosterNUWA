@@ -16,6 +16,7 @@ def get_config():
     config.val_img_path = "data/PKU_PosterLayout/train/pku_aug"
 
     config.resume_from_checkpoint = None
+    config.aug = False
 
     config.type = "stage2"
     config.vit_model_name = "dino_v2"
